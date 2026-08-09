@@ -13,7 +13,7 @@ export function setUser(username: string): void {
     writeConfig(config);
 }
 
-export function readConfig() {
+export function readConfig(): Config {
     const configContent = fs.readFileSync(getConfigFilePath(), "utf8");
     const rawConfig = JSON.parse(configContent);
     return validateConfig(rawConfig);
@@ -37,6 +37,6 @@ function validateConfig(rawConfig: any): Config {
     }
     return {
         dbUrl: rawConfig["db_url"],
-        currentUserName: rawConfig["current_user_name"] || "",
+        currentUserName: rawConfig["current_user_name"] || ""
     };
 }
