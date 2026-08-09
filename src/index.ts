@@ -1,19 +1,34 @@
-import { readConfig, setUser } from "./config";
-import { handlerLogin, registerCommand, runCommand } from "./commands.js";
-import type { CommandsRegistry } from "./commands.js";
-import process from "process";
+import {
+  type CommandsRegistry,
+  registerCommand,
+  runCommand,
+} from "./commands/commands.js";
+import { handlerLogin } from "./commands/users.js";
 
 function main() {
-    const commandReg: CommandsRegistry = {} as CommandsRegistry;
-    registerCommand(commandReg, "login", handlerLogin);
-    if (process.argv.length < 4) {
-        console.error("Error: Missing command argument.");
-        process.exit(1);
-        return;
+  const args = process.argv.slice(2);
+
+  if (args.length < 1) {
+    console.log("usage: cli <command> [args...]");
+    process.exit(1);
+  }
+
+  const cmdName = args[0];
+  const cmdArgs = args.slice(1);
+  const commandsRegistry: CommandsRegistry = {};
+
+  registerCommand(commandsRegistry, "login", handlerLogin);
+
+  try {
+    runCommand(commandsRegistry, cmdName, ...cmdArgs);
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error(`Error running command ${cmdName}: ${err.message}`);
+    } else {
+      console.error(`Error running command ${cmdName}: ${err}`);
     }
-    const commandName = process.argv[2];
-    const commandArgs = process.argv.slice(3);
-    runCommand(commandReg, commandName, ...commandArgs);
+    process.exit(1);
+  }
 }
 
 main();
