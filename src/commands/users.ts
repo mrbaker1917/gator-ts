@@ -7,6 +7,10 @@ export async function handlerLogin(cmdName: string, ...args: string[]) {
   }
 
   const userName = args[0];
+  const existingUser = await getUserByName(userName)
+  if (!existingUser) {
+    throw new Error("user is not registered!")
+  }
   setUser(userName);
   console.log("User switched successfully!");
 }
