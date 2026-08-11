@@ -3,7 +3,8 @@ import {
   registerCommand,
   runCommand,
 } from "./commands/commands.js";
-import { handlerLogin, handlerRegister } from "./commands/users.js";
+import { handlerListUsers, handlerLogin, handlerRegister } from "./commands/users.js";
+import { handlerReset } from "./commands/reset.js";
 
 async function main() {
   const args = process.argv.slice(2);
@@ -19,6 +20,9 @@ async function main() {
 
   registerCommand(commandsRegistry, "login", handlerLogin);
   registerCommand(commandsRegistry, "register", handlerRegister);
+  registerCommand(commandsRegistry, "reset", handlerReset);
+  registerCommand(commandsRegistry, "users", handlerListUsers)
+
   try {
     await runCommand(commandsRegistry, cmdName, ...cmdArgs);
   } catch (err) {
