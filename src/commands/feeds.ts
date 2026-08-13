@@ -1,6 +1,6 @@
 import { readConfig } from "src/config";
-import { createFeed } from "../lib/db/queries/feeds";
-import { getUserByName } from "../lib/db/queries/users";
+import { createFeed, getFeeds } from "../lib/db/queries/feeds";
+import { getUserByName, getUserByUserId } from "../lib/db/queries/users";
 import { Feed, User } from "src/lib/db/schema";
 
 export async function handlerAddFeed(cmdName: string, ...args: string[]) {
@@ -34,4 +34,17 @@ function printFeed(feed: Feed, user: User) {
   console.log(`* name:          ${feed.name}`);
   console.log(`* URL:           ${feed.url}`);
   console.log(`* User:          ${user.name}`);
+}
+
+export async function handlerListFeeds(_: string) {
+    const feeds = await getFeeds();
+    if (feeds.length == 0) {
+        throw new Error("No feeds to list!")
+    }
+    for (let f of feeds) {
+        const user = await getUserByUserId(f.userId);
+        console.log(f.name);
+        console.log(f.url);
+        console.log(user.name)
+    }
 }
