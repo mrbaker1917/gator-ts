@@ -15,6 +15,13 @@
       "when": 1786635491320,
       "tag": "0001_old_william_stryker",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1786727145231,
+      "tag": "0002_unknown_black_queen",
+      "breakpoints": true
     }
   ]
 }
