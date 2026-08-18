@@ -2,23 +2,26 @@ import { fetchFeed } from "../lib/rss.js";
 import { markFeedFetched, getNextFeedToFetch } from "src/lib/db/queries/feeds.js";
 
 export async function handlerAgg(cmdName: string, ...args: string[]) {
-    if (args.length < 1) {
-        console.log("usage: cli agg <time_between_reqs>");
-        process.exit(1);
+    if (args.length !== 1) {
+        throw new Error(`usage: ${cmdName} <time_between_reqs>`);
     }
-    const time_between_reqs = args[0];
-    const interval = parseDuration(time_between_reqs);
-    console.log(`Starting feed scraping every ${interval} milliseconds...`);
-    scrapeFeeds().catch((err) => {
-        console.error(`Error scraping feeds: ${err}`);
-        process.exit(1);
-    });
-    setInterval(() => {
-        scrapeFeeds().catch((err) => {
-            console.error(`Error scraping feeds: ${err}`);
-            process.exit(1);
+    const timeArg = args[0];
+    const timeBetweenRequests = parseDuration(timeArg);
+    if (!timeBetweenRequests) {
+        throw new Error(`invalid duration: ${timeArg} - use format 1h 30m 15s or 3500ms`)
+    }
+    console.log(`Starting feed scraping every ${timeBetweenRequests} milliseconds...`);
+    const interval = setInterval(() => {
+        scrapeFeeds().catch(handleError);
+    }, timeBetweenRequests);
+
+    await new Promise<void>((resolve) => {
+        process.on("SIGINT", () => {
+            console.log("Shutting down feed aggregator...");
+            clearInterval(interval);
+            resolve();
         });
-    }, interval);  
+    });
 }
 
 async function scrapeFeeds() {
@@ -55,4 +58,8 @@ function parseDuration(duration: string): number {
         }
     }
     return milliSeconds;
+}
+
+function handleError(err: unknown) {
+    console.error(`Error scraping feeds: ${err instanceof Error ? err.message : err}`);
 }
