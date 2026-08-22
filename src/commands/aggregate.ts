@@ -1,3 +1,4 @@
+import { createPost } from "src/lib/db/queries/posts.js";
 import { fetchFeed } from "../lib/rss.js";
 import { markFeedFetched, getNextFeedToFetch } from "src/lib/db/queries/feeds.js";
 
@@ -31,9 +32,11 @@ async function scrapeFeeds() {
         return;
     }
     const feedData = await fetchFeed(nextFeed.url);
-    const fetchedFeed = await markFeedFetched(nextFeed.id);
+    await markFeedFetched(nextFeed.id);
     for (let item of feedData.channel.item) {
-        console.log(item.title);
+        console.log(`Found post: %s`, item.title);
+        const publishedAt = new Date(item.pubDate);
+        await createPost(nextFeed.id, item.title, nextFeed.url, item.description, publishedAt);
     }
 }
 

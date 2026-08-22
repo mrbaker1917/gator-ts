@@ -32,6 +32,7 @@ async function main() {
   registerCommand(commandsRegistry, "follow", middlewareLoggedIn(follow));
   registerCommand(commandsRegistry, "following", middlewareLoggedIn(following));
   registerCommand(commandsRegistry, "unfollow", middlewareLoggedIn(unfollow));
+  registerCommand(commandsRegistry, "browse", middlewareLoggedIn(handlerBrowse));
 
   try {
     await runCommand(commandsRegistry, cmdName, ...cmdArgs);
