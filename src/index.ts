@@ -9,6 +9,7 @@ import { handlerAgg } from "./commands/aggregate";
 import { handlerAddFeed, handlerListFeeds } from "./commands/feeds";
 import { follow, following, unfollow } from "./commands/feed-follows.js"
 import { middlewareLoggedIn } from "./middleware.js";
+import { handlerBrowse } from "./commands/browse.js";
 
 async function main() {
   const args = process.argv.slice(2);
